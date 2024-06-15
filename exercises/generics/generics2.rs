@@ -8,12 +8,15 @@
 
 // I AM NOT DONE
 
-struct Wrapper {
-    value: u32,
+struct Wrapper<T> {
+    value: T,
 }
 
-impl Wrapper {
-    pub fn new(value: u32) -> Self {
+// having <T> on impl puts <T> in scope for Wrapper and <T> on Wrapper puts <T> in scope for the
+// Wrapper body
+// (same for the struct above)
+impl<T> Wrapper<T> {
+    pub fn new(value: T) -> Self {
         Wrapper { value }
     }
 }

@@ -7,25 +7,30 @@
 // Execute `rustlings hint threads2` or use the `hint` watch subcommand for a
 // hint.
 
-// I AM NOT DONE
-
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
+// added derive debug in order to get the object output since JobStatus does not implement printing
+#[derive(Debug)]
 struct JobStatus {
     jobs_completed: u32,
 }
 
 fn main() {
-    let status = Arc::new(JobStatus { jobs_completed: 0 });
+    let status = Arc::new(Mutex::new(JobStatus { jobs_completed: 0 }));
     let mut handles = vec![];
     for _ in 0..10 {
         let status_shared = Arc::clone(&status);
         let handle = thread::spawn(move || {
             thread::sleep(Duration::from_millis(250));
             // TODO: You must take an action before you update a shared value
+            let mut status_shared = status_shared.lock().unwrap();
             status_shared.jobs_completed += 1;
+            println!(
+                "New thread: incremented jobs completed to {:?}",
+                status_shared.jobs_completed
+            );
         });
         handles.push(handle);
     }
@@ -34,6 +39,8 @@ fn main() {
         // TODO: Print the value of the JobStatus.jobs_completed. Did you notice
         // anything interesting in the output? Do you have to 'join' on all the
         // handles?
-        println!("jobs completed {}", ???);
+        // I printed outside of the for loop because otherwise it will print 10 jobs completed over
+        // and over again
     }
+    println!("jobs completed {:?}", *status.lock().unwrap());
 }
